@@ -1,0 +1,72 @@
+application: app_name_here
+version: 100
+runtime: python27
+api_version: 1
+threadsafe: true
+
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+
+- name: jinja2
+  version: "2.6"
+
+- name: markupsafe
+  version: "0.15"
+
+derived_file_type:
+- python_precompiled
+
+handlers:
+- url: /tasks/.*
+  script: tasks_main.app
+  login: admin
+
+- url: /email_preview/.*
+  script: email_previews.app
+  login: admin
+
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /favicon.ico
+  static_files: images/favicon.ico
+  upload: images/favicon.ico
+
+- url: /flyers
+  static_dir: flyers
+
+- url: /images
+  static_dir: images
+
+- url: /press/.*
+  script: press_main.app
+
+- url: /_ereporter.*
+  script: google.appengine.ext.ereporter.report_generator.application
+  login: admin
+
+- url: /.*
+  script: main.app
+
+builtins:
+- remote_api: on
+
+inbound_services:
+- warmup
+
+admin_console:
+  pages:
+  - name: Memcache Stats
+    url: /tasks/show_memcache_stats
+
+  - name: Clear all user section list memcache caches
+    url: /tasks/clear_all_user_section_list_caches
+
+  - name: Run Class Check Cron
+    url: /tasks/check_class_by_schools
+
+  - name: Run Update Schools Cron
+    url: /tasks/update_schools
+

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+      {% block main_content %}
+        <div class="single_column">
+          <div class="rounded_corner_box_t press_release_links" style="background-image: url('/images/top_blue_box_border.png');">
+            <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_bl" style="background-image: url('/images/class_box_bottomleft.png');">
+                    <div class="rounded_corner_box_br" style="background-image: url('/images/class_box_bottomright.png');">
+                      <div class="rounded_corner_box_tl" style="background-image: url('/images/class_box_topleft.png');">
+                        <div class="rounded_corner_box_tr" style="background-image: url('/images/class_box_topright.png');">
+                          <div class="rounded_corner_box">
+                            <h2 class="press_release">Press Releases</h2>
+                            <p class="centered"><a href="/press/rss.xml">RSS Feed</a></p>
+                            <ul class="press_links">
+                              <li>{{ press_links|safe }}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="single_column_right_press_text">
+            <h2 class="how_it_works">{{ release_title|safe }}</h2>
+            <p>{{ release_text|safe }}</p>       
+            <br /><br /><br /><br />
+          </div>
+          <div style="clear:both;"></div>
+        </div>
+      {% endblock main_content %}

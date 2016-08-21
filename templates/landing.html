@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+      {% block main_content %}
+        <div class="left left_column">
+          <div id="content_holder_left" class="content_holder_left">
+            <br />
+            <div class="rounded_corner_box_t app_tagline" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_tl" style="background-image: url('/images/top_blue_box_topleft.png');">
+                      <div class="rounded_corner_box_tr" style="background-image: url('/images/top_blue_box_topright.png');">
+                        <div class="rounded_corner_box_bl" style="background-image: url('/images/top_blue_box_bottomleft.png');">
+                          <div class="rounded_corner_box_br" style="background-image: url('/images/top_blue_box_bottomright.png');">
+                            <div class="rounded_corner_box">
+                              <h1>{{ app_tagline|safe }}</h1>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded_corner_box_t school_list">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_bl" style="background-image: url('/images/blue_border_bottomleft.png');">
+                      <div class="rounded_corner_box_br" style="background-image: url('/images/blue_border_bottomright.png');">
+                        <div class="rounded_corner_box">
+                          <p>{{ app_name|safe }} class availability notification system currently supports these schools:
+                            <ul>
+                              <li>{{ school_list|safe }}</li>
+                            </ul>
+                          </p>
+                          <p>If you would like a school added please e-mail <a href="mailto:{{ contact_email|safe }}">{{ contact_email|safe }}</a></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right right_column">
+          <div id="content_holder_right" class="content_holder_right">
+            <br />
+            <div class="how_it_works">
+              <h2 class="how_it_works">ClassChecker! now FREE!</h2>
+              <p>When you need a class that is full, log in to ClassChecker! and enter the Course Reference Number (CRN) and pay with Google Checkout. ClassChecker! then checks your section 24/7 for openings. When a seat opens ClassChecker! will send you e-mail, SMS, and a message to your Google Talk/Jabber account.</p>
+              <br />
+              <h2>Just think...</h2>
+              <ul>
+                <li>No more 7am classes because all others are full</li>
+                <li>No more paying for extra semesters because you couldn't get into the courses you need</li>
+                <li>No more frantically checking closed sections for an open seat</li>
+              </ul>
+            </div>
+            <br /><br /><br /><br />
+            {% include "like_us_snippet.html" %}
+            <br /><br /><br /><br />
+          </div>
+        </div>
+      {% endblock main_content %}
+

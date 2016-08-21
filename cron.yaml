@@ -1,0 +1,16 @@
+cron:
+- description: Check terms and school information
+  url: /tasks/update_schools
+  schedule: every tue,wed,thu,fri,sat 9:00
+
+- description: Kick off class checks
+  url: /tasks/check_class_by_schools
+  schedule: every 11 minutes
+
+- description: Recheck deactivations across the whole datastore
+  url: /tasks/deactivation_rechecker
+  schedule: every sat 23:55
+
+- description: Daily exception report
+  url: /_ereporter?sender=Stephen.Lien.Harrell@gmail.com&to=Stephen.Lien.Harrell@gmail.com
+  schedule: every day 1:00

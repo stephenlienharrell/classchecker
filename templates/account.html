@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+    {% block page_scripts %}
+    <script type="text/JavaScript">
+      function LocalStart() {
+        $.ajaxSetup({async:false});
+        LoadUserData();
+      }
+
+      function LoadUserData() {
+        $.post('ajaxlib', { func: "GetUserInfo" },
+               function(response) {
+                 $('#'+response.timezone.replace(
+                     '/', '_')).attr('selected', 'selected');
+                 $('#gtalk_id').val(response.gtalk_id);
+                 $('#primary_email').val(response.email);
+                 $('#cell_phone').val(response.cell_phone);
+                 $('#'+response.school).attr('selected', 'selected');
+                }, "json");
+      }
+
+      function getQuerystring(key, default_) {
+        if (default_==null) default_=""; 
+        key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+        var qs = regex.exec(window.location.href);
+        if(qs == null) {
+          return default_;
+        } else {
+          return qs[1];
+        }
+      }
+
+      function UpdateUserInfo() {
+        var data = $("#user_account").serialize()
+        var class_redirect = getQuerystring('class_redirect_message');
+        ModifyPost(data);
+        if(class_redirect == "1") {
+          window.location.href = "/classes";
+        }
+        LoadUserData();
+      }
+
+      function SendJabberInvite() {
+        var data = { func: 'SendJabberInvitation' }
+        ModifyPost(data);
+      }
+
+      function SendJabberTestMessage() {
+        var data = { func: 'SendJabberTestMessage' }
+        ModifyPost(data);
+      }
+
+      function SendSMSTestMessage() {
+        var data = { func: 'SendSMSTestMessage' }
+        ModifyPost(data);
+      }
+
+      function ModifyPost(data) {
+        $.post('ajaxlib', data,
+               function(response) {
+                 $(".messages").html(response)
+                 if ( response.error ) {
+                   $(".messages").css("color", "#790000");
+                   $(".messages").html('ERROR: '+response.message);
+                 } else {
+                   $(".messages").css("color", "#350909");
+                   $(".messages").html('SUCCESS: '+response.message);
+                 }
+               }, "json");
+      };
+    </script>
+    {% endblock page_scripts %}
+      {% block main_content %}
+        <div class="left left_column">
+          <div id="content_holder_left" class="content_holder_left">
+            <br />
+            <div class="rounded_corner_box_t app_tagline" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_tl" style="background-image: url('/images/top_blue_box_topleft.png');">
+                      <div class="rounded_corner_box_tr" style="background-image: url('/images/top_blue_box_topright.png');">
+                        <div class="rounded_corner_box_bl" style="background-image: url('/images/top_blue_box_bottomleft.png');">
+                          <div class="rounded_corner_box_br" style="background-image: url('/images/top_blue_box_bottomright.png');">
+                            <div class="rounded_corner_box">
+                              <h1>Acount Information</h1>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded_corner_box_t school_list">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_bl" style="background-image: url('/images/blue_border_bottomleft.png');">
+                      <div class="rounded_corner_box_br" style="background-image: url('/images/blue_border_bottomright.png');">
+                        <div class="rounded_corner_box">
+                          <div class="messages">{{ message|safe }}</div>
+                          <br /><br /><br />
+                          <div class="update_user_info">
+                            <form id="user_account" name="user_account" method="post">
+                              Contact Email:<br />
+                              <input type="text" id="primary_email" name="primary_email" />
+                              <br />
+                              <br />
+                              Cell Phone:<br />
+                              <input type="text" id="cell_phone" name="cell_phone"/>
+                              <br />
+                              <br />
+                              Google Talk or Jabber ID:<br />
+                              <input type="text" id="gtalk_id" name="gtalk_id"/>
+                              <br />
+                              <br />
+                              Current School:<br />
+                              <select id="school_select" name="school">{{ school_options|safe }}</select>
+                              <br />
+                              <br />
+                              Timezone:<br />
+                              <select id="timezone_select" name="timezone">{{ timezone_options|safe }}</select>
+                              <input type="hidden" name="func" value="UpdateUserInfo" />
+                            </form>
+                            <br />
+                            <a href="#" onClick="UpdateUserInfo()">Update Account</a>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                          </div>
+                          <div class="jabber_invite">
+                            <a href="#" onClick="SendJabberInvite()">Send GTalk/Jabber Invite</a>
+                            <br />
+                            <div class="test_explain_text">In order for {{ app_name|safe }} to message you, you must accept an invite from www-classtastic@appspot.com.</div>
+                          </div>
+                          <br />
+                          <div class="jabber_test">
+                            <a href="#" onClick="SendJabberTestMessage()">Send Google Talk/Jabber test message</a>
+                          </div>
+                          <br />
+                          <br />
+                          <div class="sms_test">
+                            <a href="#" onClick="SendSMSTestMessage()">Send SMS test message</a>
+                          </div>
+                          <br />
+                          <br />
+                          <br />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right right_column">
+          <div id="content_holder_right" class="content_holder_right">
+            <br />
+            <div class="how_it_works">
+              <h2 class="how_it_works">Did you know?</h2>
+              <p>{{ app_name|safe }} will contact you by email, text message and Google Talk/Jabber!</p>
+              <p>ClassChecker!'s notification system depends on the accuracy of your contact information, so please double check the information you have provided.</p>
+              <p>Notification deliveries are based upon the accuracy of your contact information, and the reliability of your internet provider and cell phone service.  ClassChecker! is not responsible for missed notifications due to these factors.</p>
+            </div>
+            <br /><br /><br /><br />
+            {% include "like_us_snippet.html" %}
+            <br /><br /><br /><br />
+          </div>
+        </div>
+      {% endblock main_content %}

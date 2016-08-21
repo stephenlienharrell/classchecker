@@ -1,0 +1,95 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta name="description" content="A class notification system for students at universities that do not provide wait lists." />
+    <meta name="keywords" content="bitcoin,cryptocurrency,satoshi,btc,wait,list,class waitlist,class wait list,waitlist,wait list,class,notification,{{ school_cslist|safe }}" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/classtastic.css" />
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17169714-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    {% block page_scripts %}{% endblock %}
+    <title>{{ app_name|safe }}</title>
+  </head>
+  <body id="body">
+    <div class="base">
+      <div class="header">
+        <div class="title">
+          <a class="title" href="/">{{ app_name|safe }}</a><span class="trademark">&trade;</span>
+        </div>
+        <div class="orange_line"></div>
+        <div class="blue_line"></div>
+        <div class="left">
+          <div class="header_logo">
+          <a href="/"><img class="logo" width="132" height="101" alt="ClassChecker! Owl Logo" src="/images/owl_head.png" /></a>
+          </div>
+        </div>
+        <div class="login_logout">
+          {{ login_logout|safe }}
+        </div>
+        <div class="right">
+          <!-- all rounded boxes provided by http://mierendo.com/software/rounded_css_boxes/ -->
+          <div class="rounded_corner_box_t nav_buttons right">
+            <div class="rounded_corner_box_tl" style="background-image: url('/images/nav_box_topleft.png');">
+              <div class="rounded_corner_box_tr" style="background-image: url('/images/nav_box_topright.png');">
+                <div class="rounded_corner_box">
+                  <span class="nav_link_center">
+                    <span class="nav_links"><a class="nav_buttons" href="/about">about</a></span>
+                    <span class="nav_links"><a class="nav_buttons" href="/classes">classes</a></span>
+                    <span class="nav_links"><a class="nav_buttons" href="/account">account</a></span>
+                    <span class="nav_links"><a class="nav_buttons" href="/press/current">press</a></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="main" class="main">
+        {% block main_content %}{% endblock %}
+        <br /> 
+        <div id="footer" class="footer"><p class="footer">&copy;{{ year|safe }} Classtatic!&trade;, All Rights Reserved - <a href="/terms">Terms of Use</a></p></div>
+      </div>
+    </div>
+  
+    <script type="text/javascript">
+      $(document).ready(WindowLoad());
+
+      function WindowLoad() {
+          if (typeof LocalStart == 'function' ) {
+            LocalStart();
+          }
+          FixColumnHeight();
+      }
+    
+      $('.rounded_corner_box_t').resize(FixColumnHeight());
+
+      function FixColumnHeight() {
+        var biggest_height = null;
+        var left_height = $("#content_holder_left").height();
+        var right_height = $('#content_holder_right').height();
+
+        if ( right_height > left_height) {
+          biggest_height = right_height;
+        } else {
+          biggest_height = left_height;
+        }
+
+        $('#content_holder_left').css('height', biggest_height);
+        $('#content_holder_right').css('height', biggest_height);
+        $('#main').css('height', biggest_height);
+      }
+    </script>
+  </body>
+</html>

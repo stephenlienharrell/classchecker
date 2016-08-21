@@ -1,0 +1,9 @@
+{% extends "email.html" %}
+	{% block main_content %}
+          <p>A seat has opened up in {{ class_number|safe }}({{ section_number|safe }}) at {{ school_name|safe }} in {{ term_name|safe }}.</p>
+          <p>There were {{ seats_available|safe }} seat(s) open in this class at the last check. The last check occured on {{ last_checked|safe }}.</p>
+          <br />
+          <p>If you have already enrolled in this class and would no longer like to recieve notifications, please go to the <a href="http://www.classtastic.com/classes">classes page</a> and delete the section from your class list. Don't worry, if you want to reactivate it you just re-add the class at any time free of charge.</p>
+          <p>If you've had a good experience, please tell your friends and <a href="http://www.facebook.com/classtastic">like us on facebook</a>.</p>
+
+	{% endblock main_content %}

@@ -1,0 +1,7 @@
+You have successfully purchased notification for the following section(s): %(sections_list_string)s from ClassChecker! at %(school)s
+
+You may disable this notification by going to http://www.classtastic.com/classes and clicking the X next to the sections you would like to disable.
+
+If you've had a good experience, please tell your friends and like us on facebook. http://www.facebook.com/classtastic
+
+If you have any questions, concerns or want to let us know how we are doing, just reply to this e-mail and let us know.

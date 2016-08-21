@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/JavaScript">
+
+      function AJAXPost(data) {
+          $.post('/ajaxlib', data,
+                 function(response) {
+                   $(".messages").html(response)
+                   if ( response.error ) {
+                     $(".messages").html('ERROR: '+response.message);
+                   } else {
+                     $(".messages").html('SUCCESS: '+response.message);
+                   }
+                 }, "json");
+      };
+
+      function LoadUserSelects() {
+        var select_options = []
+        select_options.push('<option value="None">No User</option>')
+        $.post('/ajaxlib', { func: "GetAllUsers" },
+               function(response) {
+                 $.each(response, function(i, user) {
+                   select_options.push('<option value="'
+                                       +user.user+'">'
+                                       +user.primary_email+'</option>');
+                 })
+                 $('#promo_user').html(select_options.join(''));
+               }, "json");
+      }
+
+      function DeletePromoCode(promo_code) {
+        var data = { func: 'DeactivatePromoCode',
+                     promo_code: promo_code }
+        AJAXPost(data);
+        LoadPromoCodeTableRows();
+      }
+ 
+
+      function CreatePromoCode() {
+        var data = $("#create_promo_code").serialize();
+        AJAXPost(data);
+        LoadPromoCodeTableRows();
+      };
+
+      function LoadPromoCodeTableRows() {
+        $("#promo_table tbody").html("");
+        $.post('/ajaxlib', { func: "ListPromoCodes" },
+               function(response) {
+                 $.each(response, function(i, code_dict) {
+                   var table_row = "<tr>"
+                                  +"<td>"+code_dict.code+"</td>"
+                                  +"<td>"+code_dict.type+"</td>"
+                                  +"<td>"+code_dict.reason+"</td>"
+                                  +"<td>"+code_dict.uses_left+"</td>"
+                                  +"<td>"+code_dict.user+"</td>"
+                                  +"<td>"+code_dict.active+"</td>"
+                                  +'<td><a href="#" onclick="DeletePromoCode'
+                                  +'(\''+code_dict.code+'\')" '+">x"
+                                  +"</a></td>"
+                                  +"</tr>"
+                   
+                   $(table_row).appendTo("#promo_table tbody");
+                 })
+               }, "json");
+      };
+      $(window).load(WindowLoad());
+
+      function WindowLoad() {
+        LoadUserSelects();
+        LoadPromoCodeTableRows();
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Create Promo Code</h1>
+    <div id="messages" class="messages"></div>
+     <br />
+    <form id="create_promo_code" name="create_promo_code" method="post">
+      <input type="hidden" name="func" value="CreatePromoCode">
+      <br />
+      Promo Reason
+      <select id="promo_reason" name="promo_reason">
+        <option value="freebie">freebie</option>
+        <option value="friend">friend</option>
+        <option value="work_trade">work trade</option>
+      </select>
+      <br />
+      Promo User
+      <select id="promo_user" name="promo_user">
+      </select>
+      <br />
+      Promo Uses
+      <input type="text" value="1" name="promo_uses">
+    </form>
+    <a href="#" onClick="CreatePromoCode()">CreatePromoCode</a>
+    <br />
+    <br />
+    <br />
+    <h1>Current Promo Codes</h1>
+    <table id="promo_table" class="promo_table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Type</th>
+          <th>Reason</th>
+          <th>Uses</th>
+          <th>User</th>
+          <th>Active</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    
+  </body>
+</html>

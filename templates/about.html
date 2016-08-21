@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+      {% block main_content %}
+        <div id="left_column" class="left left_column">
+          <div id="content_holder_left" class="content_holder_left">
+            <br />
+            <div class="rounded_corner_box_t app_tagline" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_tl" style="background-image: url('/images/top_blue_box_topleft.png');">
+                      <div class="rounded_corner_box_tr" style="background-image: url('/images/top_blue_box_topright.png');">
+                        <div class="rounded_corner_box_bl" style="background-image: url('/images/top_blue_box_bottomleft.png');">
+                          <div class="rounded_corner_box_br" style="background-image: url('/images/top_blue_box_bottomright.png');">
+                            <div class="rounded_corner_box">
+                              <h1>About ClassChecker!</h1>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded_corner_box_t school_list">
+              <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                    <div class="rounded_corner_box_bl" style="background-image: url('/images/blue_border_bottomleft.png');">
+                      <div class="rounded_corner_box_br" style="background-image: url('/images/blue_border_bottomright.png');">
+                        <div class="rounded_corner_box">
+                          <p>ClassChecker! was created by a student of a Big Ten university. After not being able to get seats in the classes he needed, he wrote a program that would notify him personally when someone dropped a class that he needed. He knew it was a problem for others and turned that idea into ClassChecker!</p>
+                          <p>No more checking those full classes multiples times a day for weeks, only to have missed the drop that happened overnight.</p>
+                          <p>ClassChecker! was created to provide a way to easily track class availability for college students at universities that do not have class wait-lists.</p>
+                          <p>ClassChecker! monitors your selected classes 24/7. When a seat becomes available we notify you by text message, email, and messaging your Jabber or Google Talk account so you can get the classes you need.</p>
+                          <p>It is that simple.</p> 
+                          <br />
+                          <p>If you have any questions or comments you can contact us at <a href="mailto:{{ contact_email|safe }}">    {{ contact_email|safe }}</a>.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="right_column" class="right right_column">
+          <div id="content_holder_right" class="content_holder_right">
+            <br />
+            <div class="how_it_works">
+              <h2 class="how_it_works">How notification works</h2>
+              <p>Once an opening in a class is found the first person in the notification list is notified. If the class is still available at the next check, the second person in the list is notified. After an hour of opening everyone else in the list is notified.</p>
+              <p>Each user is only notified once until there are no open seats left. Then if another seat becomes available later, everyone will be re-notified as described above.</p>
+              <p>You can check your slot in the notification queue on the <a href="/classes">classes</a> page on the class list under "List Place" for your specific class.</p>
+              <h2 class="how_it_works">Other Information</h2>
+              <p>ClassChecker! has no affiliation with any of the schools or universities used in our services. ClassChecker! uses publicly available information, published by said universities and is not responsible for the accuracy of that information.</p>
+            </div>
+            <br /><br /><br /><br />
+            {% include "like_us_snippet.html" %}
+            <br /><br /><br /><br />
+          </div>
+        </div>
+      {% endblock main_content %}
+

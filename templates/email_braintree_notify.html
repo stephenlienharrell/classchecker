@@ -1,0 +1,8 @@
+{% extends "email.html" %}
+	{% block main_content %}
+          <p>You have successfully purchased notification for the following section(s): {{ sections_list_string|safe }} from ClassChecker! at {{ school|safe }}</p>
+          <p>You may disable this notification by going to http://www.classtastic.com/classes and clicking the X next to the sections you would like to disable.</p>
+          <br />
+          <p>If you've had a good experience, please tell your friends and <a href="http://www.facebook.com/classtastic">like us on facebook</a>.</p>
+
+	{% endblock main_content %}

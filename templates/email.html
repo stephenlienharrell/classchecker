@@ -1,0 +1,140 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>{{ subject|safe }}</title>
+    <style type="text/css">
+      html {
+        background-color: #c2dcf5;
+        font-family: Tahoma, Geneva, sans-serif;
+        height: 100%;
+        font-size: 16px;
+      }
+
+      body {
+        height: 100%;
+      }
+
+      div.base {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        margin: 0 auto -142px;
+        color: #350909;
+        position: relative;
+        width: 95%;
+        border: none;
+        text-align: left;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      div.header {
+        background-color: #c2dcf5;
+        font-size: 24px;
+        border: none;
+        width: 100%;
+        position: absolute;
+        top: 0px;
+        display: block;
+      }
+      h1 {
+        font-family: Tahoma, Geneva, sans-serif;
+        font-size: 24px;
+        font-weight: normal;
+        text-decoration: none;
+      }
+
+      div.header_logo {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+
+      img {
+        border: 0px;
+      }
+
+      div.title {
+        position: absolute;
+        top: 35px;
+        left: 135px;
+      }
+
+      a.title {
+        text-decoration: none;
+      }
+      a {
+        color: #350909;
+        border: 0px;
+      }
+      div.blue_line {
+        position: absolute;
+        top: 87px;
+        left: 0px;
+        height: 10px;
+        width: 100%;
+        background-color: #3f7bb8;
+      }
+
+      div.orange_line {
+        position: absolute;
+        top: 77px;
+        height: 10px;
+        left: 0px;
+        width: 100%;
+        background-color: #ff9933;
+      }
+
+      div.main {
+        position: absolute;
+        top: 97px;
+        width: 100%;
+        font-size: 16px;
+        background-color: #ffffff;
+      }
+
+      div.main_text {
+        padding: 10px;
+      }
+
+      div.footer {
+        position: absolute;
+        bottom: -40px;
+        font-size: .5em;
+        text-indent: 30px;
+      }
+    </style>
+  </head>
+  <body id="body">
+    <div class="base">
+      <div class="header">
+        <div class="orange_line"></div>
+        <div class="blue_line"></div>
+        <div class="left">
+          <div class="header_logo">
+          <a href="http://www.classtastic.com/"><img class="logo" width="132" height="101" alt="ClassChecker! Owl Logo" src="http://www.classtastic.com/images/owl_head.png" /></a> 
+          </div> 
+        </div>
+        <div class="title">
+          <h1><a class="title" href="http://www.classtastic.com/">ClassChecker!</a><span class="trademark">&trade;</span></h1>
+        </div>
+      </div>
+      <div id="main" class="main">
+        <div class="main_text">
+          {% block main_content %}{% endblock %}
+          <br />
+          <center>
+          <a href="http://www.facebook.com/classtastic"><img alt="Join ClassChecker! on Facebook" src="http://www.classtastic.com/images/join_us_on_facebook_200.png" /></a>
+          <br />
+          <a href="http://bitcoin.org/"><img alt="ClassChecker acceps Bitcoin!" src="http://en.bitcoin.it/w/images/en/7/74/BC_Rnd_64px.png"></a>
+          </center><br />
+
+          <p>If you have any questions, concerns or want to let us know how we are doing, just reply to this e-mail and let us know.</p>
+        </div>
+        <div id="footer" class="footer"><p class="footer">&copy;{{ year|safe }} Classtatic!&trade;, All Rights Reserved - <a href="http://www.classtastic.com/terms">Terms of Use</a></p></div>
+      </div>
+    </div>
+  </body>
+</html>

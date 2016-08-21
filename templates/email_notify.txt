@@ -1,0 +1,10 @@
+A seat has opened up in %(class_number)s(%(section_number)s) at %(school_name)s in %(term_name)s.
+
+There were %(seats_available)s seat(s) open in this class at the last check. The last check occured on %(last_checked)s.
+
+
+If you have already enrolled in this class and would no longer like to recieve notifications, please go to the classes page (http://www.classtastic.com/classes) and delete the section from your class list. Don't worry, if you want to reactivate it you just re-add the class at any time free of charge.
+
+If you've had a good experience, please tell your friends and like us on facebook. http://www.facebook.com/classtastic
+
+If you have any questions, concerns or want to let us know how we are doing, just reply to this e-mail and let us know.

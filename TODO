@@ -1,0 +1,7 @@
+- Check for classes that have added a waitlist and are active/paid and email out and give people codes
+- E-mail out for classes that don't exist anymore and email out and give people codes
+- Add auto gen sitemap for press releases
+- need to have a checking process that can walk the forms on banner to do a test check class, and then aggregate those results and notify if a school is down or moved or whatever. 
+- Need a program that will list all usersections for a certain school that are paid, active but not notified. So we can refund them if a school goes away
+- move all strings to a strings file to keep things consistent also for localization
+

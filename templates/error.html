@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+      {% block main_content %}
+        <div class="error">
+          <br />
+          <h2>An unexpected internal error occurred. The administrators have been notified. Please try again later. We apologize for any inconvenience.<h2>
+          <br /> <br />
+          <p>{{ traceback|safe }}</p>
+        </div>
+      {% endblock main_content %}

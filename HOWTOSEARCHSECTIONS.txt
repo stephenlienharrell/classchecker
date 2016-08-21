@@ -1,0 +1,6 @@
+SELECT * FROM UserModel WHERE primary_email = 'someemail@whatever.com'
+
+
+ahFzfnd3dy1jbGFzc3Rhc3RpY3IkCxIJVXNlck1vZGVsIhUxMTE0NjM4MjYyMTE3NjA2NDEzNDcM
+
+SELECT * FROM UserSectionModel WHERE user = KEY('ahFzfnd3dy1jbGFzc3Rhc3RpY3IkCxIJVXNlck1vZGVsIhUxMTE0NjM4MjYyMTE3NjA2NDEzNDcM')

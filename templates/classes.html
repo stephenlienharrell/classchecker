@@ -1,0 +1,588 @@
+{% extends "base.html" %}
+    {% block page_scripts %}
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script type="text/javascript">
+      function PromoCodePayment() {
+        $.ajax({
+          url: 'ajaxlib',
+          data: {func: 'GetAuthForSSL'},
+          type: 'POST',
+          complete: function(jqxhr, text_status) {
+            var response = jqxhr.responseText;
+            if (text_status == 'success') {
+              response = JSON.parse(response);
+              ssl_user_auth = response.ssl_user_auth;
+            }
+          }
+        });
+        $.ajax({
+          url: '{{secure_ajax_url}}/ajaxlib',
+          data: { func: 'SubmitPromoCart',
+                  ssl_user_auth: ssl_user_auth},
+          type: 'POST',
+          complete: function(jqxhr, text_status) {
+            var response = JSON.parse(jqxhr.responseText);
+
+            if (response.error) {
+              $(".messages").css("color", "#790000");
+              $(".messages").html('ERROR: '+ response.message);
+            } else {
+              $(".messages").css("color", "#350909");
+              $(".messages").html('SUCCESS: Promo code used');
+              LoadSectionTableRows();
+            }
+          },
+        });
+      }
+
+      function BitcoinPayment() {
+        ssl_user_auth = ''
+        console.log('submitting BitcoinPayment');
+        $.ajax({
+          url: 'ajaxlib',
+          data: {func: 'GetAuthForSSL'},
+          type: 'POST',
+          complete: function(jqxhr, text_status) {
+            var response = jqxhr.responseText;
+            if (text_status == 'success') {
+              response = JSON.parse(response);
+              ssl_user_auth = response.ssl_user_auth;
+            }
+          }
+        });
+ 
+        $.ajax({
+          url: '{{secure_ajax_url}}/ajaxlib',
+          data: {func: 'SubmitBitcoinCart',
+                 ssl_user_auth: ssl_user_auth},
+          type: 'POST',
+          complete: function(jqxhr, text_status) {
+            var response = jqxhr.responseText;
+            response = JSON.parse(response);
+            if(response.error) {
+              $(".messages").css("color", "#790000");
+              $(".messages").html('ERROR: '+ response.message);
+            } else {
+              $('#btc_div').append('Send ' + response.amount + ' BTC to <a href="Bitcoin:' + response.address + '?amount=' + response.amount + '&message=classtastic.com_purchase">' + response.address + '</a>');
+              $('#btc_div').append('<br />');
+              $('#btc_div').append('<a href="Bitcoin:' + response.address + '?amount=' + response.amount + '&message=classtastic.com_purchase"><img src="http://blockchain.info/qr?data=' + response.address + '&size=200"></a>');
+            }
+             
+          },
+        });
+      };
+
+      function SubmitPayment() {
+        $('#cc-link').attr('onClick', '');
+        $('#cc-link').attr('disabled', true);
+
+        var $form = $('#braintree-payment-form');
+        if ($form.valid()) {
+          //we only want the data-encrypted-number/cvv
+          $form.find('input[name="number"]').removeAttr('name');
+          $form.find('input[name="cvv"]').removeAttr('name');
+          $form.submit();
+        }
+        LoadSectionTableRows();
+      };
+
+      function SubmitCart(e) {
+        var $form = $('#braintree-payment-form');
+        e.preventDefault();
+
+        //The func: 'SubmitCart' key-value pair is already in here from the HTML form
+        ssl_user_auth = '';
+        $.ajax({
+          url: 'ajaxlib',
+          data: {func: 'GetAuthForSSL'},
+          type: 'POST',
+          complete: function(jqxhr, text_status) {
+            var response = jqxhr.responseText;
+            if (text_status == 'success') {
+              response = JSON.parse(response);
+              ssl_user_auth = response.ssl_user_auth;
+            }
+          }
+        });
+        var $formData = $form.serialize() + '&ssl_user_auth=' + ssl_user_auth;;
+        $.post('{{secure_ajax_url}}/ajaxlib', $formData,
+               function(response) {
+                 $(".messages").html(response)
+                 if ( response.error ) {
+                   $(".messages").css("color", "#790000");
+                   $(".messages").html('ERROR: '+response.message);
+                 } else {
+                   $(".messages").css("color", "#350909");
+                   $(".messages").html('SUCCESS: Payment Recieved');
+                   ClearTable('section_table');
+                   LoadSectionTableRows();
+                 }
+               }, "json");
+      };
+
+      function LocalStart() {
+        $.ajaxSetup({async:false});
+        HidePaymentSlideDowns();
+        BraintreeSetup();
+        LoadSectionTableRows();
+        HidePolicies();
+        SelectDefaultSchool();
+      }
+
+      function HidePaymentSlideDowns() {
+        $('#cc_div').slideUp();
+        $('#btc_div').slideUp();
+        $('#promo_div').slideUp();
+        $('#no_valid_class_div').slideUp();
+        var pay_div = document.getElementById('payment-div');
+        pay_div.style.display = 'block';
+      }
+
+      function BraintreeSetup() {
+        $.getScript("https://js.braintreegateway.com/v1/braintree.js", 
+              function() {
+                var braintree = Braintree.create("{{ braintree_js_encryption_key }}");
+                braintree.onSubmitEncryptForm('braintree-payment-form', SubmitCart);
+        });
+
+        $.validator.addMethod("regex", function(value, element, regexpr) {          
+          return new RegExp(regexpr).test(value);
+        }, "Invalid");
+
+        $('#braintree-payment-form').validate({
+          rules: {
+            number: {
+              creditcard: true,
+              required: true,
+            },
+            cvv: {
+              required: true,
+              minlength: 3,
+              maxlength: 4,
+            },
+            month: {
+              required: true,
+              regex: "(0[123456789]|10|11|12)",
+            },
+            year: {
+              required: true,
+              regex: "(20[0-9][0-9])",
+            },
+          }
+        });
+      }
+
+      function LoadTermsForSchool(school_name) {
+        var select_options = []
+        $.post('ajaxlib', { func: "GetTermsForSchool",
+                            school_name: school_name },
+          function(response) {
+            $.each(response, function(i, term) {
+              select_options.push('<option id="'
+                                 +term.term_number
+                                 +'" value="'
+                                 +term.term_number
+                                 +'">'+term.term_name
+                                 +'</option>');
+            })
+            $('#term_select').html(select_options.join(''));
+          }, "json");
+      }
+
+      function SelectDefaultSchool() {
+        $.post('ajaxlib', { func: "GetCurrentSchoolForUser" },
+               function(response) {
+                 var school_name = response.replace(/\s/g, '_');
+                 $('#'+school_name).attr('selected', 'selected');
+                 LoadTermsForSchool(school_name);
+                }, "json");
+      }
+
+      function LoadSectionTableRows() {
+        $("#section_table tbody").html("");
+        var unpaid_count = 0;
+        $.post('ajaxlib', { func: "ListCurrentSectionsForUser" },
+               function(response) {
+                 if( response.length == 0 ) {
+                   var table_row = '<tr><td colspan="8">'
+                                  +'No active classes'
+                                  +'</td></tr>'
+                   $(table_row).appendTo("#section_table tbody");
+                 }
+                 $.each(response, function(i, section) {
+                   if (section.purchasable == 'Yes') {
+                     unpaid_count++;
+                   }
+                   var row_key = section.school_name.replace(/\s/g,'_')
+                                +section.term_name.replace(/\s/g,'_')
+                                +section.section_number
+                   if ( !(i % 2) ) {
+                     var class_add = 'class="row_odd"';
+                   } else {
+                     var class_add = '';
+                   }
+		   var table_row = '<tr '+class_add+'>'
+                                  +'<td><span id="'+row_key
+                                    +'plus" class="big_plus" '
+                                    +'onclick="HideShowRow(\''+row_key+'\')">+'
+                                    +'</span></td>'
+                                  +'<td><input hidden="true" type="checkbox" name="'
+                                    +'section_code_checkbox" value="'
+                                    +section.key_name+'" /></td>'
+				  +"<td>"+section.term_name+"</td>" 
+				  +"<td>"+section.section_name+"</td>" 
+				  +"<td>"+section.section_number+"</td>" 
+				  +"<td>"+section.seats_available+"</td>" 
+				  +"<td>"+section.paid+"</td>" 
+				  +'<td><a href="#" onclick="DeleteClass(\''
+                                    +section.key_name+'\')" '
+                                    +'class="delete">x</a>'
+                                  +'</td></tr>'
+                                  +'<tr id="'+row_key+'"'+class_add+'>'
+                                  +'<td class="dropdown_row" colspan="8">'
+                                  +'<span class="dropdown_row">'
+				  +'<span class="bold">School: </span>'
+                                  +section.school_name
+                                  +'&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
+                                  +'<span class="bold">Last Checked: </span>'
+                                  +section.last_checked+'<br />'
+				  +'<span class="bold">Notifcation List Place: '
+                                  +'</span>'
+                                  +section.section_rank
+                                  +'&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
+				  +'<span class="bold">Purchasable: </span>'
+                                  +section.purchasable+'<br />'
+				  +'<span class="bold">Section Link: </span>'
+                                  +'<a href="'+section.section_url+'">'
+                                  +section.section_name+'</a>'
+                                  +'</span>'
+				  +'</td></tr>'
+                   $(table_row).appendTo("#section_table tbody");
+                   HideShowRow(row_key);
+                 })
+               }, "json");
+
+        
+        document.getElementById("promo_number").innerHTML = "";
+        $.post('ajaxlib', { func: "GetCurrentPromoAmount" },
+               function(response) {
+                 var promo_text = "You have " + response + " promo codes to redeem."
+                 if(response != 0) {
+                   promo_text = promo_text + '<br /><a id="promo-link-pay" href="#">Use Promo Code</a>';
+                 }
+                 document.getElementById("promo_number").innerHTML = promo_text;
+               }, "json");
+
+
+               if ( unpaid_count == 0 ) {
+                 HidePaymentSlideDowns();
+                 $('#pay-with-cc').off();
+                 $('#pay-with-cc').on("click", function() {
+                   $('#cc_div').slideUp();
+                   $('#btc_div').slideUp();
+                   $('#promo_div').slideUp();
+                   $('#no_valid_class_div').slideDown();
+                 });
+                 $('#pay-with-btc').off();
+                 $('#pay-with-btc').on("click", function() {
+                   $('#cc_div').slideUp();
+                   $('#btc_div').slideUp();
+                   $('#promo_div').slideUp();
+                   $('#no_valid_class_div').slideDown();
+                 });
+                 $('#pay-with-promo').off();
+                   $('#pay-with-promo').on("click", function() {
+                   $('#cc_div').slideUp();
+                   $('#btc_div').slideUp();
+                   $('#promo_div').slideUp();
+                   $('#no_valid_class_div').slideDown();
+                 });
+               } else {
+                 $('#pay-with-cc').off();
+                 $('#pay-with-cc').on("click", function() {
+                   $('#cc_div').slideDown();
+                   $('#btc_div').slideUp();
+                   $('#promo_div').slideUp();
+                   $('#no_valid_class_div').slideUp();
+                 });
+                 $('#pay-with-btc').off();
+                 $('#pay-with-btc').on("click", function() {
+                   $('#cc_div').slideUp();
+                   $('#btc_div').slideDown();
+                   $('#promo_div').slideUp();
+                   $('#no_valid_class_div').slideUp();
+                 });
+                 $('#pay-with-promo').off();
+                 $('#pay-with-promo').on("click", function() {
+                   $('#cc_div').slideUp();
+                   $('#btc_div').slideUp();
+                   $('#promo_div').slideDown();
+                   $('#no_valid_class_div').slideUp();
+                 });
+                 $('#cc-link').attr('onClick', 'SubmitPayment()');
+                 $('#btc-link').attr('onClick', 'BitcoinPayment()');
+                 $('#promo-link-pay').attr('onClick', 'PromoCodePayment()');
+               }
+      };
+
+      function HideShowRow(row_key) {
+        var row = document.getElementById(row_key);
+        var plus_span = document.getElementById(row_key+'plus');
+        if (row.style.display == 'none') {
+          plus_span.innerText = '-'
+          row.style.display = '';
+        } else {
+          plus_span.innerText = '+'
+          row.style.display = 'none';
+        }
+      }
+
+      function ClearTable(table_id) {
+        var table = document.getElementById(table_id);
+        var row_count = table.rows.length;
+        for(var i = 1; i < row_count; i++) {
+          table.deleteRow(1);
+          
+        }
+      };
+
+      function AddPromoOnReturn(key_code) {
+        if(key_code.keyCode == 13) {
+          AddPromo();
+          return false;
+        }
+      }
+
+      function AddPromo() {
+        AddDeletePost($("#promo_add").serialize());
+        var promo_add_form = document.getElementById('promo_add')
+        promo_add_form.elements['promo_code'].value = "";
+      }
+        
+
+      function AddClassOnReturn(key_code) {
+        if(key_code.keyCode == 13) {
+          AddClass();
+          return false;
+        }
+
+        var bad_char = false;
+    
+        $.each(document.getElementById('section_number').value.split(''),
+              function(i, text_box_char) {
+          if(text_box_char < '0' || text_box_char >'9') {
+            $(".t_box_messages").html('CRNs are composed of numbers only.');
+            bad_char = true;
+          }
+        });
+        if(!bad_char) {
+  
+            $(".t_box_messages").html('');
+        }
+      };
+ 
+      function AddClass() {
+        AddDeletePost($("#class_add").serialize());
+        var class_add_form = document.getElementById('class_add')
+        class_add_form.elements['section_number'].value = "";
+      };
+
+      function DeleteClass(class_key) {
+        AddDeletePost({'func': 'DeleteSectionForUser',
+                       'class_key': class_key});
+        var class_add_form = document.getElementById('class_add')
+        class_add_form.elements['section_number'].value = "";
+      };
+
+      function AddDeletePost(data) {
+        $.post('ajaxlib', data,
+               function(response) {
+                 $(".messages").html(response)
+                 if ( response.error ) {
+                   $(".messages").css("color", "#790000");
+                   $(".messages").html('ERROR: '+response.message);
+                 } else {
+                   $(".messages").css("color", "#350909");
+                   $(".messages").html('SUCCESS: '+response.message);
+                   ClearTable('section_table');
+                   LoadSectionTableRows();
+                 }
+               }, "json");
+      };
+
+      function HidePolicies() {
+        var div = document.getElementById('bitcoin_policy');
+        div.style.display = 'none';
+        var div = document.getElementById('refund_policy');
+        div.style.display = 'none';
+        var div = document.getElementById('secure_cart_information');
+        div.style.display = 'none';
+      }
+
+      function HideShowPolicy(policy_name) {
+        var pdiv = document.getElementById(policy_name);
+        if (pdiv.style.display == 'none') {
+          pdiv.style.display = 'block';
+        } else {
+          pdiv.style.display = 'none';
+        }
+      };       
+
+    </script>
+    {% endblock page_scripts %}
+      {% block main_content %}
+        <div class="single_column">
+          <br />
+          <div class="messages class_messages"></div>
+          <br /><br />
+          <div class="rounded_corner_box_t section_table" style="background-image: url('/images/top_blue_box_border.png');">
+            <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_bl" style="background-image: url('/images/class_box_bottomleft.png');">
+                    <div class="rounded_corner_box_br" style="background-image: url('/images/class_box_bottomright.png');">
+                      <div class="rounded_corner_box_tl" style="background-image: url('/images/class_box_topleft.png');">
+                        <div class="rounded_corner_box_tr" style="background-image: url('/images/class_box_topright.png');">
+                          <div class="rounded_corner_box">
+                            <table id="section_table" cellpadding="10" cellspacing="0">
+                              <form>
+                                <thead>
+                                  <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Term</th>
+                                    <th>Class Name</th>
+                                    <th>Course Reference Number</th>
+                                    <th>Seats Available</th>
+                                    <th>Payment Status</th>
+                                    <th>Delete</th>
+                                  </tr>
+                                </thead>
+                              </form>
+                              <tbody></tbody>
+                            </table>
+                            <div id="payment-buttons-div" class="payment-buttons-div">
+                              <button id="pay-with-cc">Pay with CC</button>
+                              <button id="pay-with-btc">Pay with Bitcoin</button>
+                              <button id="pay-with-promo">Use Promo Code</button>
+                            </div>
+                            <br/>
+                            <div id="payment-div" class="payment-div">
+                              <div id="cc_div">
+                                <form id="braintree-payment-form" class="braintree-payment-form">
+                                  <label>Card Number</label>
+                                  <input type="text" size="20" autocomplete="off" name="number" data-encrypted-name="number" /><br/>
+
+                                  <label>CVV</label>
+                                  <input type="text" size="4" autocomplete="off" name="cvv" data-encrypted-name="cvv" /><br/>
+
+                                  <label>Expiration Month (MM)</label>
+                                  <input type="text" size="2" name="month" /><br/>
+                                  <label>Expiration Year (YYYY)</label>
+                                  <input type="text" size="4" name="year" /><br/>
+                                  <input type="hidden" name="func" value="SubmitCart" />
+                                </form>
+                                <br/>
+                                <a id="cc-link" href="#"><img src="images/credit_card_button.jpg"></a>
+                              </div>
+                              <div id="btc_div">
+                                <a id="btc-link" href="#"><img width="132px" src="http://en.Bitcoin.it/w/images/en/7/74/BC_Rnd_64px.png"></a><br/>
+                              </div>
+                              <div id="promo_div">
+                                <span id="promo_number" class="promo_number"></span>
+                                <br /><br />
+                                <form id="promo_add">
+                                  PromoCode: <input onkeypress="AddPromoOnReturn(event)" type="text" name="promo_code" id="promo_code">     
+                                  <input type="hidden" name="func" value="AssignPromoCode" />
+                                </form>
+                                <a href="#" onClick="AddPromo()">Add Promo Code</a>
+                              </div>
+                              <div id="no_valid_class_div">
+                                No purchasable classes available. Please add new classes in order to purchase.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="rounded_corner_box_t add_section" style="background-image: url('/images/top_blue_box_border.png');">
+            <div class="rounded_corner_box_l" style="background-image: url('/images/top_blue_box_border.png');">
+              <div class="rounded_corner_box_r" style="background-image: url('/images/top_blue_box_border.png');">
+                <div class="rounded_corner_box_b" style="background-image: url('/images/top_blue_box_border.png');">
+                  <div class="rounded_corner_box_bl" style="background-image: url('/images/class_box_bottomleft.png');">
+                    <div class="rounded_corner_box_br" style="background-image: url('/images/class_box_bottomright.png');">
+                      <div class="rounded_corner_box_tl" style="background-image: url('/images/class_box_topleft.png');">
+                        <div class="rounded_corner_box_tr" style="background-image: url('/images/class_box_topright.png');">
+                          <div class="rounded_corner_box">
+                            <h2 class="how_it_works">Add Class</h2>
+                            <br />
+                            <form id="class_add" name="class_add">
+                              School: <select name="school_select" id="school_select" onSelect="LoadTermsForSchool(this.value)" onChange="LoadTermsForSchool(this.value)">{{ school_options|safe }}</select>
+                              <br />
+                              <br />
+                              Term: <select name="term_select" id="term_select"></select>
+                              <br />
+                              <br />
+                              Course Reference Number (CRN): <input onkeypress="AddClassOnReturn(event)" type="text" name="section_number" id="section_number">
+                              <input type="hidden" name="func" value="AddSectionForUser" />
+                            </form>
+                            <br />
+                            <div class="t_box_messages t_box_class_messages"></div>
+                            <br />
+                            <a class="add_class" href="#" onClick="AddClass()">Add Class</a>
+                            <br />
+                            <br />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="information_box">
+              <br /><br />
+              <h4 class="how_it_works">
+                <a href="#" onclick="HideShowPolicy('bitcoin_policy')">Bitcoin Policy</a><br />
+              </h4>
+                <div class="bitcoin_policy" id="bitcoin_policy">
+                If the amount sent to our Bitcoin address is too small it will be automatically returned to the sending address minus the transaction fee.<br /><br />
+                If the amount send to our Bitcoin address is too large the remainder after subtracting the purchase price will be automatically sent back to the sending address minus the transaction fee.<br /><br />
+                All refunds on Bitcoin purchases will be given in USD at the coinbase.com rate for that day. Refunds can be sent in Bitcoin after the correct exchange rate is established.<br /><br />
+                By using our product with Bitcoin, you implicitly agree to all of these policies.<br /><br />
+                </div>
+
+
+              <h4 class="how_it_works">
+                <a href="#" onclick="HideShowPolicy('secure_cart_information')">Secure Cart Information</a><br />
+              </h4>
+                <div class="secure_cart_information" id="secure_cart_information">
+                Even though the lock icon is not present on the classtastic.com website, the services purchased in your cart are submitted securely. The URL that the cart is submitted to is: <a href="{{secure_ajax_url}}/classes">{{secure_ajax_url}}/classes</a>. If you would would prefer, you may complete your transaction at that website.<br /><br />This site is hosted on Google's Appengine and it does not currently support serving with SSL on custom domains.
+                </div>
+
+                
+              <h4 class="how_it_works">
+                <a href="#" onclick="HideShowPolicy('refund_policy')">Refund Policy</a><br />
+              </h4>
+                <div class="refund_policy" id="refund_policy">
+                All sales are final. If refunds are needed they will be given as credits for services on this website.
+                </div>
+            &nbsp;
+            </div>
+          </div>
+          <div class="single_column_right">
+            <h2 class="how_it_works">Did you know?</h2>
+            <p>The Course Reference Number (CRN) is a five digit number specific to each section of every class. For instance a class (MATH 101) may have multiple sections each with it's own CRN (10001, 10002, 10003).  Check with your school if you have questions about where to find the correct CRN.</p>
+            <p>ClassChecker! is a notification system.  It DOES NOT register you the selected courses. Once you are notified, it is your responsibility to register for the class.</p>
+          <br /><br /><br /><br />
+          {% include "like_us_snippet.html" %}
+          <br /><br />
+          </div>
+          <div style="clear:both;"></div>
+          </div>
+      {% endblock main_content %}
