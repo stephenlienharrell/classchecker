@@ -11,7 +11,7 @@ URL: https://pypi.python.org/pypi/PyRSS2Gen
 
 Version: 1.0
 
-
+--
 Directory: googlevoice
 
 URL: https://pypi.python.org/pypi/pygooglevoice/
@@ -20,7 +20,7 @@ Version: 0.5
 
 Caveat: urlopen doesn't work correctly in GAE, please see this blog post for help: http://everydayscripting.blogspot.com/2009/08/google-app-engine-cookie-handling-with.html
 
-
+--
 Directory: braintree
 
 URL: https://developers.braintreepayments.com/start/hello-server/python
@@ -29,14 +29,14 @@ Version: not specified
 
 Caveat: I was using this before the Paypal buyout. YMMV
 
-
+--
 Directory: pytz
 
 URL: https://github.com/brianmhunt/pytz-appengine
 
 Version: Unlcear, 2010h?
 
-
+--
 Directory: requests
 
 URL: http://docs.python-requests.org/en/master/
